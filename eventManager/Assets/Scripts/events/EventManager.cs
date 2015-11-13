@@ -16,7 +16,7 @@ public class EventManager {
 
 		public void dispatch(GameEvent gameEvent) {
 			isDispactching = true;
-			for (int i = listeners.Count; i >= 0; i--) {
+			for (int i = listeners.Count - 1; i >= 0; i--) {
 				var listener = listeners[i];
 				if (!listener.isDeleted()) {
 					listener.callDelegate(gameEvent);
@@ -24,7 +24,7 @@ public class EventManager {
 			}
 			isDispactching = false;
 
-			for (int i = listeners.Count; i >= 0; i--) {
+			for (int i = listeners.Count - 1; i >= 0; i--) {
 				var listener = listeners [i];
 				if (listener.isDeleted ()) {
 					listeners.RemoveAt(i);
@@ -37,7 +37,7 @@ public class EventManager {
 		}
 
 		public void clear() {
-			for (int i = listeners.Count; i >= 0; i--) {
+			for (int i = listeners.Count - 1; i >= 0; i--) {
 				listeners [i].markDeleted();
 			}
 			listeners.Clear ();

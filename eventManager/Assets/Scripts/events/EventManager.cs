@@ -56,20 +56,42 @@ public class EventManager {
 	}
 
 	public EventListener listen<T>(EventListener<T>.EventDelegate callback) where T : GameEvent {
+		if (callback == null)
+			return null;
 		EventListener listener = new EventListener<T> (callback);
-		getEventRecord (typeof(T)).addListener (listener);
+		EventRecord rec;
+		if (!_records.TryGetValue (listener.eventType, out rec)) {
+			rec = new EventRecord(listener.eventType);
+			_records.Add(listener.eventType, rec);
+		}
+		rec.addListener (listener);
 		return listener;
 	}
 
-	public void removeListener<T>(EventListener listener) {
-		getEventRecord (listener.eventType).removeListener (listener);
+	public void removeListener(EventListener listener) {
+		if (listener == null)
+			return;
+		EventRecord rec;
+		if (_records.TryGetValue(listener.eventType, out rec)) {
+			rec.removeListener (listener);
+		}
 	}
 
 	public void send(GameEvent gameEvent) {
-		getEventRecord (gameEvent.GetType ()).dispatch (gameEvent);
+		if (gameEvent == null)
+			return;
+		EventRecord rec;
+		if (_records.TryGetValue(gameEvent.GetType (), out rec)) {
+			rec.dispatch (gameEvent);
+		}
 	}
 
 	public void removeAllListenersForEvent(GameEvent gameEvent) {
-		getEventRecord (gameEvent.GetType ()).clear ();
+		if (gameEvent == null)
+			return;
+		EventRecord rec;
+		if (_records.TryGetValue(gameEvent.GetType (), out rec)) {
+			rec.clear();
+		}
 	}
 }

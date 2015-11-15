@@ -2,14 +2,13 @@
 using System.Collections.Generic;
 
 public class GameEventComponent : MonoBehaviour {
-	private EventManager _eventManager;
 	private List<EventListener> _listeners = new List<EventListener>();
+	private static EventManager _eventManager = new EventManager ();
 
-	public static GameEventComponent Create(GameObject gameObject, EventManager eventManager) {
+	public static GameEventComponent Create(GameObject gameObject) {
 		GameEventComponent comp = gameObject.GetComponent<GameEventComponent> ();
 		if (comp == null) {
 			comp = gameObject.AddComponent<GameEventComponent>();
-			comp._eventManager = eventManager;
 		}
 		return comp;
 	}
@@ -41,6 +40,7 @@ public class GameEventComponent : MonoBehaviour {
 
 	// Remove all listeners when the componet destroyed
 	void OnDestroy() {
+		Debug.Log("destroy listeners");
 		clearListeners ();
 	}
 }

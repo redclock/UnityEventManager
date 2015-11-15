@@ -69,7 +69,7 @@ public class EventManager {
 		getEventRecord (gameEvent.GetType ()).dispatch (gameEvent);
 	}
 
-	public void removeEventListeners(GameEvent gameEvent) {
+	public void removeAllListenersForEvent(GameEvent gameEvent) {
 		getEventRecord (gameEvent.GetType ()).clear ();
 	}
 }

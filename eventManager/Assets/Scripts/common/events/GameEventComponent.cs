@@ -1,7 +1,9 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections.Generic;
 
 public class GameEventComponent : MonoBehaviour {
+	public bool isEnabled = true;
+
 	private List<EventListener> _listeners = new List<EventListener>();
 	private static EventManager _eventManager = new EventManager ();
 
@@ -13,13 +15,26 @@ public class GameEventComponent : MonoBehaviour {
 		return comp;
 	}
 
-	public EventListener listen<T>(EventListener<T>.EventDelegate callback) where T: GameEvent {
+	public EventListener listen<T>(EventListenerForEvent<T>.EventDelegate callback) where T: GameEvent {
+		if (!isEnabled)
+			return null;
+
 		var listener = _eventManager.listen<T> (callback);
 		_listeners.Add (listener);
 		return listener;
 	}
 
+	public EventListener observeListen<T>(EventListenerObserve<T>.EventDelegate callback) where T: GameEvent {
+		if (!isEnabled)
+			return null;
+		var listener = _eventManager.observeListen<T> (callback);
+		_listeners.Add (listener);
+		return listener;
+	}
+
 	public void removeListener(EventListener listener) {
+		if (!isEnabled)
+			return;
 		_eventManager.removeListener (listener);
 		int index = _listeners.IndexOf (listener);
 		if (index >= 0) {
@@ -35,6 +50,8 @@ public class GameEventComponent : MonoBehaviour {
 	}
 
 	public void send(GameEvent gameEvent) {
+		if (!isEnabled)
+			return;
 		_eventManager.send (gameEvent);	
 	}
 

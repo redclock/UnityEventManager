@@ -1,11 +1,9 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class GameRootBase : MonoBehaviour {
+public class GameRootBase : GameCompBase {
+	void Awake() {
 
-	public static GameObject RootObject;
-
-	protected virtual void Awake() {
-		RootObject = gameObject;
 	}
+
 }

@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class GameBase : MonoBehaviour {
+public class GameDialogBase : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {

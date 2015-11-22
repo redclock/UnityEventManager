@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 abstract class EventDispatcher {
 	public System.Type eventType;
-	public bool isDispactching = false;
+	public int dispactchingLevel = 0;
 	public List<EventListener> listeners = new List<EventListener>();
 	
 	public EventDispatcher(System.Type eventType) {
@@ -18,14 +18,15 @@ abstract class EventDispatcher {
 	protected abstract void handleListener (GameEvent gameEvent, EventListener listener);
 	
 	public void dispatch(GameEvent gameEvent) {
-		isDispactching = true;
+		dispactchingLevel++;
 		for (int i = listeners.Count - 1; i >= 0; i--) {
 			var listener = listeners[i];
 			if (!listener.isDeleted()) {
+				Debug.Log("trigger listener: " + eventType.ToString());
 				handleListener(gameEvent, listener);
 			}
 		}
-		isDispactching = false;
+		dispactchingLevel--;
 		
 		for (int i = listeners.Count - 1; i >= 0; i--) {
 			var listener = listeners [i];
@@ -37,7 +38,11 @@ abstract class EventDispatcher {
 	}
 	
 	public void removeListener(EventListener listener) {
-		listener.markDeleted ();
+		if (dispactchingLevel > 0) {
+			listener.markDeleted ();
+		} else {
+			listeners.Remove(listener);
+		}
 	}
 	
 	public void clear() {
@@ -65,8 +70,13 @@ class ObserveEventDispatcher: EventDispatcher {
 	}
 	
 	protected override void handleListener (GameEvent gameEvent, EventListener listener) {
+		var eventObserve = (GameListenEvent)gameEvent;
 		GameEvent genEvent = listener.getEvent();
-		_eventManager.send (genEvent);
+		if (eventObserve.listener == null) {
+			_eventManager.send (genEvent);
+		} else {
+			eventObserve.listener.callDelegate(genEvent);
+		}
 	}
 }
 

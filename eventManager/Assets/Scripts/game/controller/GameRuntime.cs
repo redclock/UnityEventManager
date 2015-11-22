@@ -6,7 +6,7 @@ public class GameRuntime : GameRootBase {
 		gameObject.AddComponent<GameLogic> ();
 	}
 
-	void Start () {
+	void Awake () {
 		InitializeLogic ();
 	}
 	

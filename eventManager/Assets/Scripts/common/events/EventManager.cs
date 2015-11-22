@@ -3,18 +3,25 @@ using System.Collections.Generic;
 
 public class EventManager {
 
-	private Dictionary<System.Type, EventDispatcher> _records = new Dictionary<System.Type, EventDispatcher>();
+	private Dictionary<System.Type, EventDispatcher> _dispatchers = new Dictionary<System.Type, EventDispatcher>();
 
 	public EventListener listen<T>(EventListenerForEvent<T>.EventDelegate callback) where T : GameEvent {
 		if (callback == null)
 			return null;
+		// create listener
 		EventListener listener = new EventListenerForEvent<T> (callback);
-		EventDispatcher rec;
-		if (!_records.TryGetValue (listener.eventType, out rec)) {
-			rec = new NormalEventDispatcher(listener.eventType);
-			_records.Add(listener.eventType, rec);
+		// find proper dispatcher
+		EventDispatcher disp;
+		if (!_dispatchers.TryGetValue (listener.eventType, out disp)) {
+			disp = new NormalEventDispatcher(listener.eventType);
+			_dispatchers.Add(listener.eventType, disp);
 		}
-		rec.addListener (listener);
+		disp.addListener (listener);
+
+		// send observe event
+		GameListenEvent<T> gameListenEvent = new GameListenEvent<T> (listener);
+		send (gameListenEvent);
+
 		return listener;
 	}
 
@@ -22,12 +29,12 @@ public class EventManager {
 		if (callback == null)
 			return null;
 		EventListener listener = new EventListenerObserve<T> (callback);
-		EventDispatcher rec;
-		if (!_records.TryGetValue (listener.eventType, out rec)) {
-			rec = new NormalEventDispatcher(listener.eventType);
-			_records.Add(listener.eventType, rec);
+		EventDispatcher dispatcher;
+		if (!_dispatchers.TryGetValue (listener.eventType, out dispatcher)) {
+			dispatcher = new ObserveEventDispatcher(listener.eventType, this);
+			_dispatchers.Add(listener.eventType, dispatcher);
 		}
-		rec.addListener (listener);
+		dispatcher.addListener (listener);
 
 		GameEvent genEvent = listener.getEvent();
 		if (genEvent != null) {
@@ -42,7 +49,7 @@ public class EventManager {
 		if (listener == null)
 			return;
 		EventDispatcher rec;
-		if (_records.TryGetValue(listener.eventType, out rec)) {
+		if (_dispatchers.TryGetValue(listener.eventType, out rec)) {
 			rec.removeListener (listener);
 		}
 	}
@@ -52,7 +59,7 @@ public class EventManager {
 			return;
 		Debug.Log ("send event: " + gameEvent.GetType ().ToString ());
 		EventDispatcher rec;
-		if (_records.TryGetValue(gameEvent.GetType (), out rec)) {
+		if (_dispatchers.TryGetValue(gameEvent.GetType (), out rec)) {
 			rec.dispatch (gameEvent);
 		}
 	}
@@ -61,7 +68,7 @@ public class EventManager {
 		if (gameEvent == null)
 			return;
 		EventDispatcher rec;
-		if (_records.TryGetValue(gameEvent.GetType (), out rec)) {
+		if (_dispatchers.TryGetValue(gameEvent.GetType (), out rec)) {
 			rec.clear();
 		}
 	}

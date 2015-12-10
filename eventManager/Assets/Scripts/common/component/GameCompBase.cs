@@ -10,4 +10,11 @@ public class GameCompBase : MonoBehaviour {
 			return _eventComp;
 		}
 	}
+
+	protected void playAnimation(string name) {
+		var animComp = GetComponent<Animation> ();
+		if (animComp != null) {
+			animComp.Play(name, PlayMode.StopAll);
+		}
+	}
 }

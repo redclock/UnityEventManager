@@ -4,6 +4,10 @@ using System.Collections.Generic;
 public class GameDialogManager: GameCompBase {
 	private List<GameDialogBase> _dialogs= new List<GameDialogBase>();
 
+	void Awake() {
+		DontDestroyOnLoad = true;	
+	}
+
 	private void resetOrder(int index)
 	{
 		_dialogs[index].transform.SetSiblingIndex(index);
@@ -14,6 +18,14 @@ public class GameDialogManager: GameCompBase {
 		for (int i = 0; i < _dialogs.Count; i++)
 		{
 			resetOrder(i);
+		}
+	}
+
+	private void removeDialogAt(int index) {
+		if (index >= 0 && index < _dialogs.Count) {
+			var dialog = _dialogs[index];
+			_dialogs.RemoveAt (index);
+			dialog.onPop ();
 		}
 	}
 

@@ -44,6 +44,7 @@ public class GameDialogBase : GameCompBase {
 	public virtual void appear() 
 	{
 		setVisible (true);
+		Destroy (gameObject);
 		//playAnimation("Dialog Appear");
 	}
 	

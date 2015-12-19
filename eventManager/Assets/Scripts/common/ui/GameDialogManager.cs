@@ -4,9 +4,7 @@ using System.Collections.Generic;
 public class GameDialogManager: GameCompBase {
 	private List<GameDialogBase> _dialogs= new List<GameDialogBase>();
 
-	void Awake() {
-		DontDestroyOnLoad = true;	
-	}
+	public GameObject maskLayer;
 
 	private void resetOrder(int index)
 	{
@@ -15,8 +13,19 @@ public class GameDialogManager: GameCompBase {
 
 	private void resetOrder()
 	{
+		if (_dialogs.Count <= 1) {
+			maskLayer.SetActive(false);
+			return;
+		}
+		maskLayer.SetActive(false);
 		for (int i = 0; i < _dialogs.Count; i++)
 		{
+			if (i == _dialogs.Count - 1) {
+				_dialogs[i].transform.SetSiblingIndex(i);
+			}
+			else {
+			}
+
 			resetOrder(i);
 		}
 	}

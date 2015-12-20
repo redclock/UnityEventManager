@@ -8,26 +8,34 @@ public class GameDialogManager: GameCompBase {
 
 	private void resetOrder(int index)
 	{
-		_dialogs[index].transform.SetSiblingIndex(index);
+		if (index == _dialogs.Count - 1) {
+			_dialogs[index].transform.SetSiblingIndex(index + 1);
+		}
+		else {
+			_dialogs[index].transform.SetSiblingIndex(index);
+		}
 	}
 
-	private void resetOrder()
-	{
+	private void updateMaskLayer() {
 		if (_dialogs.Count <= 1) {
 			maskLayer.SetActive(false);
 			return;
 		}
-		maskLayer.SetActive(false);
-		for (int i = 0; i < _dialogs.Count; i++)
+		maskLayer.SetActive (true);
+		maskLayer.transform.SetSiblingIndex (_dialogs.Count - 1);
+	}
+	private void resetOrder()
+	{
+		for (int i = 0; i < _dialogs.Count - 1; i++)
 		{
-			if (i == _dialogs.Count - 1) {
-				_dialogs[i].transform.SetSiblingIndex(i);
-			}
-			else {
-			}
-
 			resetOrder(i);
 		}
+		updateMaskLayer ();
+		if (_dialogs.Count > 0) {
+			_dialogs[_dialogs.Count - 1].transform.SetSiblingIndex(_dialogs.Count);
+		}
+		maskLayer.transform.SetSiblingIndex (_dialogs.Count - 1);
+		maskLayer.SetActive(true);
 	}
 
 	private void removeDialogAt(int index) {
